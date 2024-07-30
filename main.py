@@ -6,7 +6,6 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 import binascii
-import matplotlib.pyplot as plt
 from PIL import Image
 import click
 def key_gen(seed):
