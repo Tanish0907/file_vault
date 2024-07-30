@@ -8,6 +8,7 @@ from cryptography.hazmat.backends import default_backend
 import binascii
 import matplotlib.pyplot as plt
 from PIL import Image
+from numpy import append
 global pic
 pic=[]
 def key_gen(seed):
@@ -75,7 +76,7 @@ def encrypt_file(f_name,file_number,input_file,seed_token):
 
 
 def divide_file(path:str,parts:int,key):
-    f_name=path.split(".")[1].replace("/","")
+    f_name=path.split(".")[0].replace("/","")
     paths=[]
     os.mkdir(f'./{f_name}')
     chunk_size=int(int(os.path.getsize(path))/parts)
@@ -91,8 +92,9 @@ def divide_file(path:str,parts:int,key):
             chunk = f.read(CHUNK_SIZE)
     for i in paths:
         shutil.move(i,f'./{f_name}')
+    return f_name
 
-def combine_file(files:list,key:str):
+def combine_file(files:list,f_name:str,key:str):
     file=b''
     key=str(key_gen(key))
     for i in files:
@@ -102,16 +104,50 @@ def combine_file(files:list,key:str):
         data = decrypt_file(data,key)
         file=file+data
     img=Image.open(BytesIO(file))
-    img.save("op.jpg")
-    plt.imshow(img)
-    plt.show()
+    img.save(f"./{f_name}.jpg")
+    #plt.imshow(img)
+    #plt.show()
+
+def encrypt_folder(path:str,op_path:str,parts:int,key:str):
+    os.chdir(path)
+    enc_img_dir=[]
+    total_img=len(os.listdir("./"))
+    done=0
+    for i in os.listdir("./"):
+        enc_img_dir.append(f'./{divide_file(i,parts,key)}')
+        done +=1
+        print(f'###################{done}/{total_img}#######################')
+    os.mkdir(f"./{op_path}")
+    for i in enc_img_dir:
+        shutil.move(i,f"./{op_path}")
+    print("********************done*********************")
+
+def decrypt_folder(path:str,key:str):
+    total_img=len(os.listdir(path))
+    done=0
+    os.chdir(path)
+    for i in os.listdir("./"):
+        img=[]
+        for x in os.listdir(i):
+            img.append(f"./{i}/{x}")
+        combine_file(img,f'{i}',key)
+        done +=1
+        print(f'###################{done}/{total_img}#######################')
+
+        
 
 
+        
+
+        
 
 
 
 
 if __name__=="__main__":
+    #encrypt_folder("./test/","./op",4,"tanish")
+    decrypt_folder("./op/","tanish")
+    '''
     divide_file("./images.jpg",2,"tanish")
     file_lst=[]
     img=b""
@@ -119,3 +155,4 @@ if __name__=="__main__":
     for i in os.listdir(path):
         file_lst.append(f'{path}{i}')
     combine_file(file_lst,"tanish")
+    '''
