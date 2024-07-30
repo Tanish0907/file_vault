@@ -8,9 +8,7 @@ from cryptography.hazmat.backends import default_backend
 import binascii
 import matplotlib.pyplot as plt
 from PIL import Image
-from numpy import append
-global pic
-pic=[]
+import click
 def key_gen(seed):
     seed=bytes(seed,"utf-8")
     seed_hash=hashlib.sha256()
@@ -134,10 +132,28 @@ def decrypt_folder(path:str,key:str):
         done +=1
         print(f'###################{done}/{total_img}#######################')
 
+@click.command()
+@click.option("--encrypt",is_flag=True,help="use for encryption")
+@click.option("--decrypt",is_flag=True,help="use for decryption")
+@click.option("--input_path",help="mention input path",default="./")
+@click.option("--output_path",help="mention output path",default="./op")
+@click.option("--key",help="mention enc/dec key",default="1234")
+@click.option("--parts",help="mention file division number",default="1")
+
+def main(encrypt,decrypt,input_path,output_path,key,parts):
+    if encrypt:
+        parts=int(parts)
+        encrypt_folder(input_path,output_path,parts,key)
+    elif decrypt:
+        decrypt_folder(input_path,key)
+if __name__=="__main__":
+    main()
+
+'''
 if __name__=="__main__":
     #encrypt_folder("./test/","./op",4,"tanish")
     decrypt_folder("./op/","tanish")
-    '''
+    #test
     divide_file("./images.jpg",2,"tanish")
     file_lst=[]
     img=b""
@@ -145,4 +161,4 @@ if __name__=="__main__":
     for i in os.listdir(path):
         file_lst.append(f'{path}{i}')
     combine_file(file_lst,"tanish")
-    '''
+'''
