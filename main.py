@@ -134,16 +134,6 @@ def decrypt_folder(path:str,key:str):
         done +=1
         print(f'###################{done}/{total_img}#######################')
 
-        
-
-
-        
-
-        
-
-
-
-
 if __name__=="__main__":
     #encrypt_folder("./test/","./op",4,"tanish")
     decrypt_folder("./op/","tanish")
