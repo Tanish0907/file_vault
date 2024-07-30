@@ -1,3 +1,16 @@
+Metadata-Version: 2.1
+Name: image_vault
+Version: 1.0.1
+Summary: it is a tool for encrypting images
+Author: Tanish
+Author-email: sharmatanish0907@gmail.com
+Keywords: python,cryptography,image_vault,vault,encrypt,encryption,fs
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pillow
+Requires-Dist: cryptography
+Requires-Dist: click
+
 ```markdown
 # Image Vault
 
