@@ -9,7 +9,7 @@ setup(
     long_description_content_type='text/markdown',
     long_description=Long_description,
     name="image_vault",
-    version="1.0.1",
+    version="1.0.2",
     packages=find_packages(),
     install_requires=[
         "pillow",

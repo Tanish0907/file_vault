@@ -42,7 +42,7 @@ def decrypt_file(input_file, seed_token):
     return data    
     
 
-def encrypt_file(f_name,file_number,input_file,seed_token):
+def encrypt_file(f_name,extension,file_number,input_file,seed_token):
     # Generate a key from the seed token
     key = seed_token.ljust(32)[:32].encode('utf-8')  # Ensure key is 32 bytes long
     iv = os.urandom(16)  # Initialization vector
@@ -65,15 +65,16 @@ def encrypt_file(f_name,file_number,input_file,seed_token):
     hex_data = binascii.hexlify(iv + encrypted_data).decode('utf-8')
     
     # Write the hex data to the output file
-    with open(f'{f_name}{file_number}', 'w') as output_file:
+    with open(f'{f_name}-{extension}-{file_number}', 'w') as output_file:
         output_file.write(hex_data)
 
-    print(f"Encrypted data written to {f_name}{file_number}")
+    print(f"Encrypted data written to {f_name}-{extension}-{file_number}")
 
 
 
 def divide_file(path:str,parts:int,key):
     f_name=path.split(".")[0].replace("/","")
+    extension=path.split(".")[-1]
     paths=[]
     os.mkdir(f'./{f_name}')
     chunk_size=int(int(os.path.getsize(path))/parts)
@@ -83,25 +84,24 @@ def divide_file(path:str,parts:int,key):
     with open(path, 'rb') as f:  # open in binary read mode
         chunk = f.read(CHUNK_SIZE)
         while chunk:
-            paths.append(f"./{f_name}{file_number}")
-            encrypt_file(f_name,file_number,chunk,key)
+            paths.append(f"./{f_name}-{extension}-{file_number}")
+            encrypt_file(f_name,extension,file_number,chunk,key)
             file_number += 1
             chunk = f.read(CHUNK_SIZE)
     for i in paths:
         shutil.move(i,f'./{f_name}')
     return f_name
 
-def combine_file(files:list,f_name:str,key:str):
+def combine_file(files:list,f_name:str,extension:str,key:str):
     file=b''
     key=str(key_gen(key))
     for i in files:
         with open(i) as f:
             data=f.read()
-        print(data)
         data = decrypt_file(data,key)
         file=file+data
     img=Image.open(BytesIO(file))
-    img.save(f"./{f_name}.jpg")
+    img.save(f"./{f_name}.{extension}")
     #plt.imshow(img)
     #plt.show()
 
@@ -122,12 +122,14 @@ def encrypt_folder(path:str,op_path:str,parts:int,key:str):
 def decrypt_folder(path:str,key:str):
     total_img=len(os.listdir(path))
     done=0
+    ext=""
     os.chdir(path)
     for i in os.listdir("./"):
         img=[]
         for x in os.listdir(i):
             img.append(f"./{i}/{x}")
-        combine_file(img,f'{i}',key)
+            ext=x.split("-")[-2]
+        combine_file(img,f'{i}',ext,key)
         done +=1
         print(f'###################{done}/{total_img}#######################')
 
